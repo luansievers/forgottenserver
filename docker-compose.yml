@@ -1,0 +1,31 @@
+﻿version: '3.3'
+services:
+  poketibia-db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'poketibia'
+      MYSQL_USER: 'user-poketibia'
+      MYSQL_PASSWORD: 'password-poketibia'
+      MYSQL_ROOT_PASSWORD: '123456789'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./db:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - poketibia-network
+  poketibia-server:
+    build:
+      context: .
+    ports:
+      - "7171:7171"
+      - "7172:7172"
+    depends_on:
+      - poketibia-db
+    networks:
+      - poketibia-network
+networks:
+  poketibia-network:
